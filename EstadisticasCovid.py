@@ -1,8 +1,10 @@
 import csv
 import matplotlib
 import pandas as pd
+import pandas_datareader as pdr
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QSize, Qt, QAbstractTableModel
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget,
@@ -148,6 +150,7 @@ class MainWindow(QMainWindow):
         self.pantalla_llena = False
         self.table = QTableView()
         self.grafico = MplCanvas(self, width=5, height=4, dpi=100)
+        self.plt = Figure(figsize=(8,5))
 
 # ##################### Creacion de botones / widgets #########################
 
@@ -226,6 +229,10 @@ class MainWindow(QMainWindow):
         self.tablaESP_action = QAction("Tabla Provincias", self)
         self.tablaESP_action.triggered.connect(self.generar_tablaESP)
         self.tablaESP_action.setStatusTip("Generar Tabla")
+        
+        self.graficoESP_action = QAction("Grafico Esp", self)
+        self.graficoESP_action.triggered.connect(self.grafico_esp)
+        self.graficoESP_action.setStatusTip("Generar grafico españa")
 
         cerrar_aplicacion = QAction("Cerrar Aplicacion", self)
         cerrar_aplicacion.setStatusTip("Cerrar Aplicacion")
@@ -259,7 +266,9 @@ class MainWindow(QMainWindow):
         toolbar.addSeparator()
         toolbar.addAction(self.tablaESP_action)
         toolbar.addSeparator()
-
+        toolbar.addAction(self.graficoESP_action)
+        toolbar.addSeparator()
+        
 # ################################ Menu / StatusBar ##########################
 
         self.setStatusBar(QStatusBar(self))
@@ -419,6 +428,26 @@ class MainWindow(QMainWindow):
         self.stackedlayout.setCurrentWidget(self.holder_grafico)
 
         self.pantalla_llena = True
+
+    def grafico_esp (self):
+        self.limpiar_pantalla()
+        self.grafico.close()
+
+        data_csv = pd.read_csv('data/españa.csv', sep=',', decimal='.')
+
+        plt.figure(figsize=(12,7))
+        
+        plt.plot(data_csv.date, data_csv.TestAc, 'r.-', label='Total Positivos', marker="")
+        plt.plot(data_csv.date, data_csv.hospitalized_accumulated, 'b.-', label='Total Hospitalizados', marker="")
+        plt.plot(data_csv.date, data_csv.deceased, 'y.-', label='Total Fallecidos', marker="")
+        
+        plt.title("COVID ESPAÑA")
+        plt.ylabel("Total Personas")
+        plt.legend()
+        
+        plt.xticks(data_csv.date[::200].tolist())
+
+        plt.show()
     
     def button_CSVinfo(self, s):
         dlg = QMessageBox(self)
