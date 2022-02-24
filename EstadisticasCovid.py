@@ -5,7 +5,7 @@ import pandas_datareader as pdr
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QFont
 from PySide6.QtCore import QSize, Qt, QAbstractTableModel
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget,
                                QComboBox, QStatusBar, QVBoxLayout,
@@ -58,6 +58,7 @@ class LoginWindow(QWidget):
 
         self.ventana_psswd = QLineEdit()
         self.ventana_psswd.setPlaceholderText("1234")
+        self.ventana_psswd.setEchoMode(QLineEdit.Password)
         self.layoutv_login.addWidget(self.ventana_psswd)
         self.ventana_psswd.setAlignment(Qt.AlignCenter)
 
@@ -138,12 +139,16 @@ class MainWindow(QMainWindow):
 # ############################# Layouts #######################################
 
         self.layout_general = QVBoxLayout()      # Layout Central
-        self.layout_labels = QHBoxLayout()       # Layout para los labels
+        #self.layout_labels = QHBoxLayout()       # Layout para los labels
         self.layout_botones = QHBoxLayout()      # Layout para los botones
         self.stackedlayout = QStackedLayout()    # Layout para cambiar entre grafico y tabla
         self.layout_tabla = QVBoxLayout()        # Layout para la tabla de ciudades
         self.layout_graficoinfo = QVBoxLayout()  # Layout el grafico + la info
         self.layout_pantalla = QHBoxLayout()     # Layout para el grafico
+        
+        self.layout_botones.setAlignment(Qt.AlignHCenter)
+        self.layout_general.setAlignment(Qt.AlignVCenter)
+        self.layout_graficoinfo.setAlignment(Qt.AlignVCenter)
 
 # ####################### Declaracion de algunas variables ####################
 
@@ -171,26 +176,32 @@ class MainWindow(QMainWindow):
         # Label de informacion
         self.label_info = QLabel(self.widget)
         self.label_info.setFixedSize(900, 100)
+        
+        self.label_inicio = QLabel(self.widget)
+        self.label_inicio.setFixedSize(900, 500)
+        self.label_inicio.setText("Selecciona una provincia o una ciudad " +
+                                  " y clica el grafico correspondiente")
+        self.label_inicio.setAlignment(Qt.AlignCenter)
 
         # Labels para los combobox
-        self.pais = QLabel("                           Pais: ", self.widget)
-        self.label_info.setFixedSize(900, 20)
+        self.pais = QLabel("Pais: ", self.widget)
         self.provincia = QLabel("Provincias: ", self.widget)
-        self.label_info.setFixedSize(900, 20)
         self.ciudades = QLabel("Ciudades Valencia: ", self.widget)
-        self.label_info.setFixedSize(900, 20)
 
 # ################### AddWidget / AddLayout / SetLayout #######################
 
         # Añadimos los botones al layout
+        self.layout_botones.addWidget(self.pais)
         self.layout_botones.addWidget(self.cb_esp)
+        self.layout_botones.addWidget(self.provincia)
         self.layout_botones.addWidget(self.provincias_esp)
+        self.layout_botones.addWidget(self.ciudades)
         self.layout_botones.addWidget(self.ciudades_valencia)
 
         # Añadimos labels de informacion al layout de labels
-        self.layout_labels.addWidget(self.pais)
-        self.layout_labels.addWidget(self.provincia)
-        self.layout_labels.addWidget(self.ciudades)
+        #self.layout_labels.addWidget(self.pais)
+        #self.layout_labels.addWidget(self.provincia)
+        #self.layout_labels.addWidget(self.ciudades)
 
         # Añadimos el stackedlayout
         self.layout_general.addLayout(self.stackedlayout)
@@ -207,8 +218,9 @@ class MainWindow(QMainWindow):
         self.layout_tabla.addWidget(self.table)
 
         # Añadmios los labels el grafico y los botones
-        self.layout_graficoinfo.addLayout(self.layout_labels)
+        #self.layout_graficoinfo.addLayout(self.layout_labels)
         self.layout_graficoinfo.addLayout(self.layout_botones)
+        self.layout_graficoinfo.addWidget(self.label_inicio)
         self.layout_graficoinfo.addLayout(self.layout_pantalla)
         self.layout_graficoinfo.addWidget(self.label_info)
 
@@ -226,7 +238,7 @@ class MainWindow(QMainWindow):
         self.graficoP_action.triggered.connect(self.generar_grafico_provincias)
         self.graficoP_action.setStatusTip("Generar grafico provincias")
         
-        self.tablaESP_action = QAction("Tabla Provincias", self)
+        self.tablaESP_action = QAction("Tabla España", self)
         self.tablaESP_action.triggered.connect(self.generar_tablaESP)
         self.tablaESP_action.setStatusTip("Generar Tabla")
         
